@@ -22,4 +22,4 @@ jobs:
           password: ${{ secrets.SFTP_PASSWORD }}
           local-dir: wp-content/themes/astra-child/
           server-dir: wp-content/themes/astra-child/
-          method: scp
+          method: ftps
