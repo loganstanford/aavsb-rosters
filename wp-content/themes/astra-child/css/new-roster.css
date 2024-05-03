@@ -1,0 +1,106 @@
+
+  
+  input:disabled, select:disabled {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: #333; /* Adjust color to match your design */
+    font-size: 16px; /* Optional: Adjust to match your design */
+    padding: 0; /* Removes padding */
+    opacity: 1.0;
+    box-shadow: none;
+    background-color: whi;
+}
+
+/* Additional styling for select to hide the dropdown arrow when disabled */
+select:disabled {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+/* Chrome, Safari, and Opera */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    -webkit-text-fill-color: #333 !important;
+}
+
+/* Firefox */
+input:-moz-ui-autofill,
+input:-moz-ui-autofill:hover, 
+input:-moz-ui-autofill:focus, 
+input:-moz-ui-autofill:active {
+    background-color: white !important;
+    color: #333 !important;
+}
+
+/* General approach for any supporting browsers */
+input::placeholder {
+    color: #aaa;
+}
+
+/* Adjust the form styling */
+#new-roster-form {
+    width: 100%;
+    /* Form should take the full width of its container */
+    max-width: 1200px;
+    /* Limit the width to keep the form readable */
+    margin: 0 auto;
+    /* Center the form within the container */
+}
+
+/* Make sure the form sections take up the space needed and align items properly */
+#step1,
+#step2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Center items vertically in each step */
+    margin-bottom: 1.5rem;
+    /* Add space below each step for clarity */
+}
+
+#step1 {
+    max-width: 400px;
+    margin: auto;
+}
+
+/* Additional spacing for the elements inside step 1 */
+#step1 .course-type,
+#step1 .provider-number,
+#step1 .course-number {
+    margin-bottom: 20px;
+    /* Or any other value you see fit */
+}
+
+#actions {
+    min-width: 180px;
+}
+
+/* If the button groups are intended to be in-line, ensure proper spacing */
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    /* Adjust if you want a different spacing */
+    margin-bottom: 1rem;
+    /* Add space below button groups */
+}
+
+.button-group button {
+    margin-right: 10px;
+    /* Space between buttons */
+}
+
+.top-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.top-buttons {
+    align-items: flex-end;
+    /* Align top buttons to the bottom of their container */
+}

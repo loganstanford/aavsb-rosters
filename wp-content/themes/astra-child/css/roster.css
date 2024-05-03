@@ -1,0 +1,58 @@
+.ast-container {
+    padding-top: 50px;
+}
+
+/* Additional styles to make sure the h1 is formatted correctly and appears above the form */
+.ast-container>h1 {
+    /* Ensure h1 takes full width and is centered above the form */
+    width: 100%;
+    text-align: center;
+    margin-bottom: 1rem;
+    /* Add some space below the h1 */
+}
+
+body.page-template-template-new-roster .ast-container,
+body.page-template-template-edit-roster .ast-container {
+    /* Use flex column direction for the children of ast-container */
+    flex-direction: column !important;
+}
+
+.error {
+    border: 2px solid red !important;
+}
+
+.table-container {
+    width: 100%;
+    /* Table should take the full width of its container */
+    margin-bottom: 20px;
+    /* Space below the table */
+}
+
+.bottom-buttons {
+    justify-content: space-between;
+    /* Space out the bottom buttons */
+}
+
+.profession-header {
+    min-width: 150px;
+}
+
+.roster-details {
+    max-width: 300px;
+}
+
+.spinner {
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border-left-color: #fff;
+    animation: spin 1s infinite linear;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
