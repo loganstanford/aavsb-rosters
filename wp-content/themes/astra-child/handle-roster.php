@@ -57,6 +57,7 @@ function handle_roster_submission() {
 }
 
 add_action('wp_ajax_submit_roster', 'handle_roster_submission'); // handles logged-in users
+add_action('wp_ajax_nopriv_submit_roster', 'handle_roster_submission'); // handles non-logged-in users
 
 
 

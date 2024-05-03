@@ -18,7 +18,7 @@ get_header(); ?>
     <?php astra_content_page_loop(); ?>
 
     <!-- Custom Query to Display User Rosters -->
-    <?php if ( is_user_logged_in() ): ?>
+
     <?php
             $current_user = wp_get_current_user();
             $args = array(
@@ -66,9 +66,7 @@ get_header(); ?>
     
     
         ?>
-    <?php else: ?>
-    <p>Please log in to manage your rosters.</p>
-    <?php endif; ?>
+
 
     <?php astra_primary_content_bottom(); ?>
 
