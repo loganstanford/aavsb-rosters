@@ -24,4 +24,4 @@ jobs:
           key: ${{ secrets.SFTP_KEY }}
           port: ${{ secrets.SFTP_PORT }}
           source: wp-content/themes/astra-child/
-          target: /var/www/aavsb/wp-content/themes/astra-child/
+          target: /var/www/aavsb/
