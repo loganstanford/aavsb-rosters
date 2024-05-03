@@ -1,6 +1,9 @@
-name: Deploy
+name: Deploy WordPress Theme
 
-on: push
+on:
+  push:
+    branches:
+      - main # Adjust to your default branch
 
 jobs:
   deploy:
@@ -10,11 +13,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Upload files via SCP
-        uses: appleboy/scp-action@v0.1.4
+      - name: Deploy WordPress Theme
+        uses: samkirkland/ftp-deploy-action@4.2.0
         with:
-          host: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASS }}
-          source: "your/source/path"
-          target: "/var/www/aavsb"
+          server: ${{ secrets.SFTP_SERVER }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          local-dir: wp-content/themes/astra-child
+          server-dir: wp-content/themes/astra-child
+          method: scp
