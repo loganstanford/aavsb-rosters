@@ -104,3 +104,20 @@ input::placeholder {
     align-items: flex-end;
     /* Align top buttons to the bottom of their container */
 }
+
+.input-icon-container {
+    position: relative;
+    display: inline-block;
+}
+
+.input-icon-container input {
+    padding-right: 30px; /* Adjust padding to ensure text doesn't overlap the icon */
+}
+
+.input-icon-container .input-icon {
+    position: absolute;
+    right: 10px; /* Adjust this value to position the icon correctly */
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none; /* Makes the icon non-interactive */
+}

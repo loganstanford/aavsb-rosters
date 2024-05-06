@@ -212,3 +212,23 @@ function export_roster_to_excel($attendees, $providerNumber, $courseNumber, $cou
 
         return $file_url;
 }
+
+function validate_license_number() {
+    if (!check_ajax_referer('validate_roster_nonce', 'validation_security', false)) {
+        wp_send_json_error(array('message' => 'Validation nonce verification failed.'));
+        return;
+    }
+    $license_number = $_POST['license_number'] ?? '';
+    $board_code = $_POST['board_code'] ?? '';
+
+    if (empty($license_number)) {
+        wp_send_json(['valid' => false]);
+    }
+
+    global $wpdb;
+    $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM `Licenses` WHERE `LicenseNumber` = %s AND `BoardCode` = %s", $license_number, $board_code));
+
+    wp_send_json(['valid' => (int)$exists > 0]);
+}
+add_action('wp_ajax_validate_license_number', 'validate_license_number');
+add_action('wp_ajax_nopriv_validate_license_number', 'validate_license_number');

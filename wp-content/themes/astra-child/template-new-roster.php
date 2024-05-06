@@ -18,11 +18,6 @@ add_filter( 'body_class', function( $classes ) {
 
 
 
-<style>
-
-</style>
-
-
 <?php if ( astra_page_layout() == 'left-sidebar' ) : ?>
 <?php get_sidebar(); ?>
 <?php endif ?>
@@ -128,10 +123,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_roster'])) {
 
             </div>
         </div>
+        <div class="test-values  mt-4">
+            <h4>Valid License numbers for testing:</h4>
+            <table class="w-25">
+                <thead>
+                    <tr>
+                        <th>License Number</th>
+                        <th>State</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>123456</td>
+                        <td>AL</td>
+                    </tr>
+                    <tr>
+                        <td>654321</td>
+                        <td>FL</td>
+                    </tr>
+                </tbody>
+
+            </table>
+        </div>
     </div>
 
 
 </form>
+
+
 
 
 <?php if ( astra_page_layout() == 'right-sidebar' ) : ?>

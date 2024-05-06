@@ -1,3 +1,4 @@
+// Ensure to call this function to initialize the form and attach the validation
 document.addEventListener("DOMContentLoaded", function () {
   initializeForm();
 });
@@ -13,6 +14,69 @@ function initializeForm() {
     .addEventListener("change", updateFieldsBasedOnCourseType);
 
   updateFieldsBasedOnCourseType(); // Initialize fields on page load
+}
+
+function validateLicenseNumber(input, licenseNumber, boardCode) {
+  if (!licenseNumber || !boardCode) {
+    console.error("License number and State is required.");
+    return Promise.reject("License number and State are required."); // Reject the promise immediately
+  }
+
+  // Disable input and add spinner
+  input.disabled = true;
+  let iconSpan = input.nextElementSibling || document.createElement("span");
+  iconSpan.className = "fas fa-spinner fa-spin input-icon";
+  iconSpan.setAttribute("data-toggle", "tooltip");
+  iconSpan.setAttribute("title", ""); // Default empty title
+  if (!input.nextElementSibling) {
+    input.parentNode.insertBefore(iconSpan, input.nextSibling);
+  }
+
+  const formData = new FormData();
+  formData.append("action", "validate_license_number");
+  formData.append("license_number", licenseNumber);
+  formData.append("board_code", boardCode);
+  formData.append("validation_security", aavsbAjax.validation_nonce);
+
+  return fetch(aavsbAjax.ajaxurl, {
+    // Return the promise from fetch
+    method: "POST",
+    body: formData,
+    credentials: "same-origin",
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      // Remove spinner and update with icon
+      iconSpan.className = data.valid
+        ? "fas fa-check-circle input-icon text-success"
+        : "fas fa-times-circle input-icon text-danger";
+      let message = data.valid
+        ? ""
+        : "This license was not found in our system. Double check that it was entered correctly. If the license number is correct, this person doesn't have an account with us and this CE will show as a rejection until they create an account.";
+      input.setAttribute("title", message);
+      jQuery(input).tooltip("dispose").tooltip(); // Reinitialize the tooltip
+
+      input.classList.toggle("error", !data.valid);
+      input.isValidated = data.valid; // Update the validated status on the input
+      return data.valid; // Return the validation status for further processing
+    })
+    .catch((error) => {
+      console.error("Error validating license number:", error);
+      iconSpan.className = "fas fa-exclamation-circle text-warning";
+
+      input.setAttribute("title", "Error during validation. Please retry.");
+      jQuery(input).tooltip("dispose").tooltip(); // Reinitialize the tooltip
+
+      input.disabled = false; // Re-enable the input for editing
+      input.isValidated = false; // Indicate validation failure
+      return false; // Return false as the validation failed
+    })
+    .finally(() => {});
 }
 
 function handleSubmit(e) {
@@ -107,6 +171,7 @@ function capitalizeFirstLetter(string) {
 function showStep(step) {
   // Check if moving to step 2 requires validation
   if (step === 2) {
+    updateFieldsBasedOnCourseType(); // Update fields based on course type
     const courseTypeInput = document.getElementById("course_type");
     const providerNumberInput = document.getElementById("provider_number");
     const courseNumberInput = document.getElementById("course_number");
@@ -188,9 +253,9 @@ function addAttendeeForm() {
 
   // Base HTML for a new row
   newRow.innerHTML = `
-    <td><input type="text" name="attendees[${attendeeIndex}][license_number]" required /></td>
+    <td><div class="input-icon-container"><input type="text" name="attendees[${attendeeIndex}][license_number]" required /></div></td>
     <td><select name="attendees[${attendeeIndex}][state]" required>${stateOptions}</select></td>
-    <td><input type="date" name="attendees[${attendeeIndex}][date_of_completion]" required /></td>
+    <td><input type="date" name="attendees[${attendeeIndex}][date_of_completion]" required max="${getCurrentDate()}"/></td>
     <td><select name="attendees[${attendeeIndex}][profession]" required>
       <option value="Veterinarian">Vet</option>
       <option value="Veterinarian Technician">Vet Tech</option>
@@ -211,10 +276,10 @@ function addAttendeeForm() {
     });
   } else {
     medicalHours = newRow.querySelector(".medical-hours");
-    medicalHours.innerHTML = `<input type="number" name="attendees[${attendeeIndex}][medical_hours]" required>`;
+    medicalHours.innerHTML = `<input type="number" name="attendees[${attendeeIndex}][medical_hours]" required min="0" max="99">`;
 
     nonMedicalHours = newRow.querySelector(".non-medical-hours");
-    nonMedicalHours.innerHTML = `<input type="number" name="attendees[${attendeeIndex}][non_medical_hours]" required>`;
+    nonMedicalHours.innerHTML = `<input type="number" name="attendees[${attendeeIndex}][non_medical_hours]" required min="0" max="99">`;
   }
 
   // Attach event listeners to the delete buttons
@@ -300,6 +365,28 @@ function saveAttendee(button) {
   const row = button.closest("tr");
   let isValid = true;
 
+  // Locate the license number input specifically
+  const licenseInput = row.querySelector(
+    "input[name^='attendees'][name$='[license_number]']"
+  );
+  const stateSelect = row.querySelector(
+    "select[name^='attendees'][name$='[state]']"
+  );
+
+  validateLicenseNumber(
+    licenseInput,
+    licenseInput.value.trim(),
+    stateSelect.value
+  ).then((isValidated) => {
+    console.log("License number validation status:", isValidated);
+    if (!isValidated) {
+      console.error(
+        "License number validation failed. Check the number and state and try again."
+      );
+      return false; // Stop further execution if validation fails
+    }
+  });
+
   // Validate each input and select element
   Array.from(row.querySelectorAll("input, select")).forEach((input) => {
     if (
@@ -309,7 +396,7 @@ function saveAttendee(button) {
     ) {
       input.classList.add("error"); // Add error class if the field is empty
       isValid = false;
-      console.log("Field is empty:", input.name);
+      console.log("Field is empty or invalid:", input.name);
     } else {
       input.classList.remove("error"); // Remove error class if the field is filled
     }
@@ -396,23 +483,7 @@ function startOver() {
       "Are you sure you want to start over? All unsaved changes will be lost."
     )
   ) {
-    const table = document
-      .getElementById("attendees-table")
-      .getElementsByTagName("tbody")[0];
-
-    // Reset the form fields
-    document.getElementById("new-roster-form").reset();
-
-    // Remove all rows in the attendees table except the template row if you keep one for cloning
-    while (table.rows.length > 0) {
-      table.deleteRow(0);
-    }
-
-    // Reset attendee index if used for tracking new rows
-    attendeeIndex = 0;
-
-    // Go back to the first step
-    showStep(1);
+    window.location.reload(); // Reload the page to start over
   }
 }
 
@@ -435,6 +506,15 @@ function saveProgress() {
       }
     })
     .catch((error) => console.error("Error:", error));
+}
+
+// Function to get the current date in the format YYYY-MM-DD
+function getCurrentDate() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 // Call this function on page load and when the course type changes

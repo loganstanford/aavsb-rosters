@@ -28,11 +28,16 @@ function enqueue_roster_styles_and_scripts() {
     }
 
     if (is_page_template('template-new-roster.php')) {
+        wp_enqueue_script( 'jquery', 'https://code.jquery.com/jquery-3.5.1.min.js', array(), '3.5.1', true );
+        wp_enqueue_script( 'popper-js', 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js', array('jquery'), '1.16.0', true );
+        wp_enqueue_script( 'bootstrap-js', 'https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js', array('jquery'), '4.5.2', true );
+        
         wp_enqueue_style('new-roster-style', get_stylesheet_directory_uri() . '/css/new-roster.css');
         wp_enqueue_script('new-roster-script', get_stylesheet_directory_uri() . '/js/new-roster.js', array('jquery'), '1.0', true);
         wp_localize_script('new-roster-script', 'aavsbAjax', array(
             'ajaxurl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('submit_roster_nonce')
+            'nonce' => wp_create_nonce('submit_roster_nonce'),
+            'validation_nonce' => wp_create_nonce('validate_roster_nonce')
         ));
     }
 
